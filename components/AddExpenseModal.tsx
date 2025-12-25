@@ -46,20 +46,40 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.amount) return;
+    const amountNum = parseFloat(formData.amount);
+    
+    if (!formData.name || isNaN(amountNum) || amountNum <= 0) {
+      alert("Por favor, ingresa un nombre válido y un monto mayor a cero.");
+      return;
+    }
     
     // Si la categoría actual es distinta a lo que la IA sugirió inicialmente,
     // guardamos el aprendizaje antes de cerrar.
     if (lastAISuggestion && formData.category !== lastAISuggestion) {
-      onSaveCorrection(formData.name, formData.category);
+      onSaveCorrection(formData.name.trim(), formData.category);
     }
 
     onAdd({
       ...formData,
       id: Math.random().toString(36).substr(2, 9),
-      amount: parseFloat(formData.amount)
+      amount: amountNum
     } as Expense);
     onClose();
+  };
+
+  const handleAmountChange = (value: string) => {
+    // Permitir vacío para borrar
+    if (value === '') {
+      setFormData({ ...formData, amount: '' });
+      return;
+    }
+
+    // Expresión regular para números positivos con hasta 2 decimales
+    // Acepta números enteros o con un punto y hasta dos decimales
+    const regex = /^\d*\.?\d{0,2}$/;
+    if (regex.test(value)) {
+      setFormData({ ...formData, amount: value });
+    }
   };
 
   const handleSuggest = async () => {
@@ -180,11 +200,11 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Monto</label>
               <input 
                 required 
-                type="number" 
-                step="0.01" 
+                type="text" 
+                inputMode="decimal"
                 class="w-full rounded-xl border-gray-100 bg-gray-50 focus:ring-indigo-500 transition-all" 
                 value={formData.amount} 
-                onChange={e => setFormData({...formData, amount: e.target.value})} 
+                onChange={e => handleAmountChange(e.target.value)} 
                 placeholder="0.00"
               />
             </div>
