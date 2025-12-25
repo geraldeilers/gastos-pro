@@ -1,0 +1,7 @@
+{
+  "name": "Gestor de Gastos Inteligente",
+  "description": "Una aplicación avanzada para la gestión de gastos personales que utiliza IA para procesar estados de cuenta bancarios (BCP e Interbank), categorizar consumos automáticamente y visualizar tendencias financieras anuales.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
